@@ -1,0 +1,2 @@
+CREATE DATABASE constructor;
+CREATE DATABASE nocodb;

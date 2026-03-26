@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  nocodb:
+    image: nocodb/nocodb:latest
+    environment:
+      NC_DB: "pg://postgres:5432?u=${POSTGRES_USER}&p=${POSTGRES_PASSWORD}&d=nocodb"
+      NC_AUTH_JWT_SECRET: ${NC_AUTH_JWT_SECRET}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  constructor:
+    build: .
+    environment:
+      CONSTRUCTOR_DB_HOST: ${CONSTRUCTOR_DB_HOST}
+      CONSTRUCTOR_DB_PORT: ${CONSTRUCTOR_DB_PORT}
+      CONSTRUCTOR_DB_NAME: ${CONSTRUCTOR_DB_NAME}
+      CONSTRUCTOR_DB_USER: ${CONSTRUCTOR_DB_USER}
+      CONSTRUCTOR_DB_PASSWORD: ${CONSTRUCTOR_DB_PASSWORD}
+      NOCODB_URL: ${NOCODB_URL}
+      NOCODB_API_TOKEN: ${NOCODB_API_TOKEN}
+      CONSTRUCTOR_BOT_TOKEN: ${CONSTRUCTOR_BOT_TOKEN}
+    volumes:
+      - ./bots:/app/bots
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nocodb:
+        condition: service_started
+
+volumes:
+  pgdata:

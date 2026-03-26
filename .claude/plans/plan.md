@@ -1,4 +1,4 @@
-# notification-bot-constructor — Plan
+# Constantin Bot — Plan
 
 ## Context
 
@@ -64,5 +64,9 @@ Telegram-бот-конструктор, который создаёт инфра
 
 Кнопки: содержание — число = переход на строку сценария, URL = inline-ссылка.
 
-## Чего не знаю:
-- Какой NocoDB-инстанс используется (URL, авторизация)
+## Что нужно сделать
+
+- [ ] Написать TypeScript конструктор-бот (`src/index.ts`) — команды `/add`, `/list`, `/stop`, `/run`, `/delete`
+- [ ] Переписать `bots/notification_bot.py` — оставить только логику дочернего бота (убрать FSM конструктора, `/createbot`, `/listbots`)
+
+## Что неясно / открытые вопросы
